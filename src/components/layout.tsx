@@ -9,17 +9,17 @@ import {
 import { AppProps } from "zmp-ui/app";
 
 import HomePage from "@/pages/index";
+import Register from "@/pages/register";
 
 const Layout = () => {
   return (
     <App theme={getSystemInfo().zaloTheme as AppProps["theme"]}>
-      <SnackbarProvider>
-        <ZMPRouter>
-          <AnimationRoutes>
-            <Route path="/" element={<HomePage />}></Route>
-          </AnimationRoutes>
-        </ZMPRouter>
-      </SnackbarProvider>
+      <ZMPRouter>
+        <AnimationRoutes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/register" element={<Register />} />
+        </AnimationRoutes>
+      </ZMPRouter>
     </App>
   );
 };

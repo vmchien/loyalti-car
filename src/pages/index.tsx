@@ -1,8 +1,9 @@
+
 import React from "react";
-import CustomerForm from "@/components/customer-form";
+import Home from "./home";
 
 function HomePage() {
-  return <CustomerForm />;
+  return <Home />;
 }
 
 export default HomePage;
