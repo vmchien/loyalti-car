@@ -14,18 +14,28 @@ const Home: React.FC = () => {
             setError("Vui lòng nhập đầy đủ thông tin");
             return;
         }
+
+
         try {
+            //  alert("Đăng nhập thành công!");
+            //     setError("");
+            //     navigate("/create-order");
+
             const response = await fetch(`${API_BASE_URL}/common/v1/health/detail`, {
                 method: "GET",
             })
-              if (!response.ok) {
+
+            if (!response.ok) {
                 throw new Error("Đăng nhập thất bại");
             }
             const data = await response.json();
-            if (data.success) {
+            alert(JSON.stringify(data));
+
+            if (data.status === "UP") {
                 alert("Đăng nhập thành công!");
+                alert(JSON.stringify(data));
                 setError("");
-                // TODO: Lưu token, chuyển trang, ...
+                navigate("/create-order");
             } else {
                 setError(data.message || "Đăng nhập thất bại");
             }
