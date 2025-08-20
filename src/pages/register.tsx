@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Box, Button, Input, Page, Text, Select, DatePicker } from "zmp-ui";
+import { API_BASE_URL } from "@/config";
+import { authFetch } from "@/services/auth-service";
 
 const Register: React.FC = () => {
   const [form, setForm] = useState({
@@ -18,15 +20,37 @@ const Register: React.FC = () => {
     setForm(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // Validate
     if (!form.username || !form.password || !form.fullName || !form.email || !form.phone) {
       setError("Vui lòng nhập đầy đủ thông tin bắt buộc");
       return;
     }
-    // TODO: Call API đăng ký
-    alert("Đăng ký thành công!");
-    setError("");
+    try {
+      const response = await authFetch(`${API_BASE_URL}/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: form.username,
+          password: form.password,
+          fullName: form.fullName,
+          email: form.email,
+          phone: form.phone,
+          address: form.address,
+          gender: form.gender,
+          dateOfBirth: form.dateOfBirth ? form.dateOfBirth.toISOString().split('T')[0] : "",
+        }),
+      });
+      if (!response.ok) {
+        throw new Error("Đăng ký thất bại");
+      }
+      alert("Đăng ký thành công!");
+      setError("");
+    } catch (err) {
+      setError("Đăng ký thất bại");
+    }
   };
 
   return (
@@ -115,7 +139,7 @@ const Register: React.FC = () => {
         </Button>
       </Box>
     </Page>
-  );
+  )
 };
 
 export default Register;

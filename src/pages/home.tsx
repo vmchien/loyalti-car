@@ -2,70 +2,51 @@ import React, { useState } from "react";
 import { Box, Button, Input, Page, Text } from "zmp-ui";
 import { useNavigate } from "zmp-ui";
 import { API_BASE_URL } from "@/config";
+import { authFetch } from "@/services/auth-service";
 
 const Home: React.FC = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
-
+    const navigate = useNavigate();
 
     const handleLogin = async () => {
         if (!username || !password) {
             setError("Vui lòng nhập đầy đủ thông tin");
             return;
         }
-
-
         try {
-            //  alert("Đăng nhập thành công!");
-            //     setError("");
-            //     navigate("/create-order");
-
-            const response = await fetch(`${API_BASE_URL}/common/v1/health/detail`, {
-                method: "GET",
-            })
-
+            const response = await fetch(`${API_BASE_URL}/auth/v1/login`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ username, password }),
+            });
             if (!response.ok) {
                 throw new Error("Đăng nhập thất bại");
             }
-            const data = await response.json();
-            alert(JSON.stringify(data));
-
-            if (data.status === "UP") {
-                alert("Đăng nhập thành công!");
-                alert(JSON.stringify(data));
-                setError("");
-                navigate("/create-order");
-            } else {
-                setError(data.message || "Đăng nhập thất bại");
+            //call api /me check role
+            const meResponse = await authFetch(`${API_BASE_URL}/me`, {
+                method: "GET",
+            });
+            if (!meResponse.ok) {
+                throw new Error("Không thể lấy thông tin người dùng");
             }
-
-            // const response = await fetch(`${API_BASE_URL}/login`, {
-            //     method: "POST",
-            //     headers: {
-            //         "Content-Type": "application/json",
-            //     },
-            //     body: JSON.stringify({ username, password }),
-            // });
-            // if (!response.ok) {
-            //     throw new Error("Đăng nhập thất bại");
-            // }
-            // const data = await response.json();
-            // if (data.success) {
-            //     alert("Đăng nhập thành công!");
-            //     setError("");
-            //     // TODO: Lưu token, chuyển trang, ...
-            // } else {
-            //     setError(data.message || "Đăng nhập thất bại");
-            // }
+            const meData = await meResponse.json();
+            console.log("User info:", meData);
+            navigate("/create-order");
         } catch (err) {
             setError("Không thể kết nối tới server hoặc thông tin không đúng");
         }
     };
 
-    const navigate = useNavigate();
     const handleRegister = () => {
         navigate("/register");
+    };
+
+    const handleChangePassword = () => {
+        navigate("/change-password");
     };
 
     return (
@@ -103,10 +84,17 @@ const Home: React.FC = () => {
                 </Button>
                 <Button
                     variant="secondary"
-                    className="w-full"
+                    className="w-full mb-2"
                     onClick={handleRegister}
                 >
                     Đăng ký
+                </Button>
+                <Button
+                    variant="tertiary"
+                    className="w-full"
+                    onClick={handleChangePassword}
+                >
+                    Đổi mật khẩu
                 </Button>
             </Box>
         </Page>
